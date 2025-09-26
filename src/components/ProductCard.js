@@ -1,12 +1,12 @@
 export default function ProductCard(props) {
-  const { productId, imageUrl, title, lprice, brand } = props;
+  const { productId, image, title, lprice, brand } = props;
   const price = Number(lprice);
   return `
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden product-card"
                     data-product-id="${productId}">
             <!-- 상품 이미지 -->
             <div class="aspect-square bg-gray-100 overflow-hidden cursor-pointer product-image">
-                <img src="${imageUrl}"
+                <img src="${image}"
                     alt="${title}"
                     class="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
                     loading="lazy">
