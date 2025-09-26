@@ -1,7 +1,4 @@
-import Layout from "./components/Layout.js";
 import HomePage from "./pages/HomePage.js";
-import ProductService from "./services/productService.js";
-import { productStore } from "./stores/productStore.js";
 
 const enableMocking = () =>
   import("./mocks/browser.js").then(({ worker }) =>
@@ -11,19 +8,8 @@ const enableMocking = () =>
   );
 
 function main() {
-  ProductService.getListWithCategories();
-
-  const render = () => {
-    const rootElement = document.getElementById("root");
-    if (!rootElement) return;
-
-    rootElement.innerHTML = `
-      ${Layout({ children: HomePage })}
-    `;
-  };
-  render();
-
-  productStore.subscribe(render);
+  const homePage = HomePage({ el: document.getElementById("root") });
+  homePage.mount();
 }
 
 // 애플리케이션 시작
