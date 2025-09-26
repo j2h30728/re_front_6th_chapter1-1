@@ -7,9 +7,7 @@ export default function SearchBar({
   category = {},
   categories = {},
 }) {
-  console.log("SearchBar====", searchQuery, sort, limit, category, categories);
   const optionLimitList = OPTION_LIMITS.map((value) => {
-    console.log("optionLimitList====", value, limit, Number(value), limit === Number(value));
     return `
     <option value="${value}" ${Number(limit) === value ? "selected" : ""}>${value}</option>
   `;

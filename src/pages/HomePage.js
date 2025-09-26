@@ -29,9 +29,11 @@ export default function HomePage({ el: el = document.getElementById("root") }) {
     })}
   `,
     events: {
-      input: {
+      keydown: {
         "#search-input": ({ event, setState }) => {
-          setState({ searchQuery: event.target.value });
+          if (event.key === "Enter") {
+            setState({ searchQuery: event.target.value });
+          }
         },
       },
       change: {
@@ -59,7 +61,6 @@ export default function HomePage({ el: el = document.getElementById("root") }) {
         newState.limit !== prevState.limit ||
         newState.category !== prevState.category
       ) {
-        console.log("onUpdate====", newState);
         ProductService.getListWithCategories(newState);
       }
     },
