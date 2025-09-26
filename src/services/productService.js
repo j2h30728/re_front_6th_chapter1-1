@@ -18,16 +18,24 @@ const ProductService = {
     }
   },
 
-  getListWithCategories: async () => {
+  getListWithCategories: async (filters) => {
     productStore.dispatch({ type: PRODUCT_ACTIONS.SETUP, payload: { loading: true, error: null, status: "pending" } });
 
     try {
-      const [{ products, pagination }, categories] = await Promise.all([getProducts(), getCategories()]);
+      const [{ products, pagination }, categories] = await Promise.all([
+        getProducts({
+          search: filters?.searchQuery || "",
+          sort: filters?.sort || "price_asc",
+          limit: filters?.limit || 20,
+          category1: filters?.category?.category1 || "",
+          category2: filters?.category?.category2 || "",
+        }),
+        getCategories(),
+      ]);
       productStore.dispatch({
         type: PRODUCT_ACTIONS.SETUP,
         payload: { products, totalCount: pagination.total, categories, loading: false, error: null, status: "done" },
       });
-      console.log(productStore.getState());
     } catch (error) {
       productStore.dispatch({ type: PRODUCT_ACTIONS.SET_ERROR, payload: error.message });
     }
