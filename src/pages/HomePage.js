@@ -61,7 +61,7 @@ export default function HomePage({ el: el = document.getElementById("root") }) {
         newState.limit !== prevState.limit ||
         newState.category !== prevState.category
       ) {
-        ProductService.getListWithCategories(newState);
+        ProductService.loadList({ filters: newState });
       }
     },
   });

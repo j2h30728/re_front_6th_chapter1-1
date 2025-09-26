@@ -35,6 +35,14 @@ const productReducer = (state, action) => {
       return { ...state, products: action.payload, loading: false, error: null, status: "done" };
     case PRODUCT_ACTIONS.SET_PRODUCT:
       return { ...state, currentProduct: action.payload, loading: false, error: null, status: "done" };
+    case PRODUCT_ACTIONS.SET_MORE_LIST:
+      return {
+        ...state,
+        products: [...state.products, ...action.payload],
+        loading: false,
+        error: null,
+        status: "done",
+      };
     default:
       return state;
   }
