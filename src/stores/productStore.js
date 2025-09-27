@@ -32,13 +32,21 @@ const productReducer = (state, action) => {
     case PRODUCT_ACTIONS.SET_CATEGORIES:
       return { ...state, categories: action.payload, loading: false, error: null, status: "done" };
     case PRODUCT_ACTIONS.SET_LIST:
-      return { ...state, products: action.payload, loading: false, error: null, status: "done" };
+      return {
+        ...state,
+        products: action.payload.products,
+        totalCount: action.payload.totalCount,
+        loading: false,
+        error: null,
+        status: "done",
+      };
     case PRODUCT_ACTIONS.SET_PRODUCT:
       return { ...state, currentProduct: action.payload, loading: false, error: null, status: "done" };
     case PRODUCT_ACTIONS.SET_MORE_LIST:
       return {
         ...state,
-        products: [...state.products, ...action.payload],
+        totalCount: action.payload.totalCount,
+        products: [...state.products, ...action.payload.products],
         loading: false,
         error: null,
         status: "done",

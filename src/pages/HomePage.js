@@ -2,6 +2,7 @@ import Layout from "../components/Layout";
 import ProductList from "../components/ProductList";
 import SearchBar from "../components/SearchBar";
 import createComponent from "../core/createComponent";
+import { registerInfiniteScroll } from "../libs/scrollUtils";
 import ProductService from "../services/productService";
 import { productStore } from "../stores/productStore";
 
@@ -10,7 +11,7 @@ export default function HomePage({ el: el = document.getElementById("root") }) {
     el,
     initialState: {
       ...productStore.getState(),
-      searchQuery: "",
+      search: "",
       sort: "price_asc",
       limit: 20,
       category: {},
@@ -32,7 +33,7 @@ export default function HomePage({ el: el = document.getElementById("root") }) {
       keydown: {
         "#search-input": ({ event, setState }) => {
           if (event.key === "Enter") {
-            setState({ searchQuery: event.target.value });
+            setState({ search: event.target.value });
           }
         },
       },
@@ -50,18 +51,23 @@ export default function HomePage({ el: el = document.getElementById("root") }) {
         this.setState(state);
       });
       ProductService.getListWithCategories();
+
+      this.cleanupScroll = registerInfiniteScroll();
     },
     onUnmount: function () {
       if (this.unsubscribe) this.unsubscribe();
+      if (this.cleanupScroll) this.cleanupScroll();
     },
     onUpdate: function (newState, prevState) {
       if (
-        newState.searchQuery !== prevState.searchQuery ||
+        newState.search !== prevState.search ||
         newState.sort !== prevState.sort ||
         newState.limit !== prevState.limit ||
         newState.category !== prevState.category
       ) {
-        ProductService.loadList({ filters: newState });
+        ProductService.loadList({
+          filters: { ...prevState, ...newState },
+        });
       }
     },
   });

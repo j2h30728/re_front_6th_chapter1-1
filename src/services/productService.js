@@ -4,13 +4,9 @@ import { initialProductState, productStore } from "../stores/productStore";
 
 const ProductService = {
   loadList: async ({ filters = {}, init = true }) => {
-    productStore.dispatch({
-      type: PRODUCT_ACTIONS.SETUP,
-      payload: { ...initialProductState, loading: true, error: null, status: "pending" },
-    });
     const defaultFilters = {
       page: init ? 1 : filters?.page + 1,
-      search: filters?.searchQuery || "",
+      search: filters?.search || "",
       sort: filters?.sort || "price_asc",
       limit: filters?.limit || 20,
       category1: filters?.category?.category1 || "",
@@ -19,6 +15,10 @@ const ProductService = {
 
     try {
       if (init) {
+        productStore.dispatch({
+          type: PRODUCT_ACTIONS.SETUP,
+          payload: { ...initialProductState, loading: true, error: null, status: "pending" },
+        });
         await ProductService.loadInitialList(defaultFilters);
       } else {
         await ProductService.loadMoreList(defaultFilters);
@@ -34,7 +34,7 @@ const ProductService = {
     try {
       const [{ products, pagination }, categories] = await Promise.all([
         getProducts({
-          search: filters?.searchQuery || "",
+          search: filters?.search || "",
           sort: filters?.sort || "price_asc",
           limit: filters?.limit || 20,
           category1: filters?.category?.category1 || "",
@@ -42,6 +42,7 @@ const ProductService = {
         }),
         getCategories(),
       ]);
+      console.log("getListWithCategories==", products, pagination.total);
       productStore.dispatch({
         type: PRODUCT_ACTIONS.SETUP,
         payload: { products, totalCount: pagination.total, categories, loading: false, error: null, status: "done" },
@@ -52,42 +53,45 @@ const ProductService = {
   },
 
   loadInitialList: async (filters = {}) => {
-    const state = productStore.getState();
-
     const data = await getProducts({
       page: filters.page || 1,
-      limit: filters.limit || state.filters.limit,
-      search: filters.searchQuery,
-      sort: filters.sort || state.filters.sort,
+      limit: filters.limit,
+      search: filters.search,
+      sort: filters.sort,
       category1: filters.category1,
       category2: filters.category2,
     });
-    const { products } = data;
+    const { products, pagination } = data;
     productStore.dispatch({
       type: PRODUCT_ACTIONS.SET_LIST,
-      payload: products,
+      payload: { products, totalCount: pagination.total },
     });
+    console.log("loadInitialList==", products, pagination.total);
   },
 
   loadMoreList: async (filters = {}) => {
     const state = productStore.getState();
-
-    if (!state.pagination.hasNext || state.loading) {
+    const hasNext = state.products.length < state.totalCount;
+    if (!hasNext || state.loading) {
       return;
     }
+    productStore.dispatch({
+      type: PRODUCT_ACTIONS.SET_STATUS,
+      payload: "pending",
+    });
 
     const data = await getProducts({
-      page: state.pagination.page + 1,
-      limit: filters.limit || state.filters.limit,
-      search: filters.searchQuery,
-      sort: filters.sort || state.filters.sort,
+      page: filters.page,
+      limit: filters.limit,
+      search: filters.search,
+      sort: filters.sort,
       category1: filters.category1,
       category2: filters.category2,
     });
-    const { products } = data;
+    const { products, pagination } = data;
     productStore.dispatch({
       type: PRODUCT_ACTIONS.SET_MORE_LIST,
-      payload: products,
+      payload: { products, totalCount: pagination.total },
     });
   },
 };
