@@ -19,7 +19,7 @@ export default function ProductCard(props) {
                 </h3>
                 <p class="text-xs text-gray-500 mb-2">${brand}</p>
                 <p class="text-lg font-bold text-gray-900">
-                    ${price}원
+                    ${price.toLocaleString()}원
                 </p>
                 </div>
                 <!-- 장바구니 버튼 -->
